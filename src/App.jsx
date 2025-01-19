@@ -10,23 +10,36 @@ function App() {
  const activeSet = useSelector((state) => state.drumMachine.activeSet)
  const volume = useSelector((state) => state.drumMachine.volume);
  const power = useSelector((state) => state.drumMachine.power);
-
  const [currentSound, setCurrentSound] = useState('');
   
-console.log(power)
-   
+const activePads = pads.filter((_, index) => 
+   activeSet === 1 ? index < 9 : index >= 9
+);
+
+const handlePadClick = (pad) => {
+    const audio = new Audio(pad.sound);
+    audio.play();
+}
+
+
 
   return (
     <>
+    
    <div className="drumMachine" id="drum-machine">
     <div id="keys-container" className="keys-container">
-      <div className="drum-pad"></div>
+     {activePads.map((pad) => {
+       return (<div
+      id={pad.name}
+      className="drum-pad"
+      key={pad.id}
+      onClick={() => handlePadClick(pad)}
+      >
+      {pad.key.toUpperCase()}
+      </div>)
+     })}
     </div>
-    <div className="control-panel">
-     <div id="display">
-
-     </div>
-    </div>
+    
    </div>
     </>
   )

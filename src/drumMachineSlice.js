@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initalState = {
+const initialState = {
     pads: [
         { id: 1, name: "heater1", sound: "https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3", active: false, key: "q" },
         { id: 2, name: "heater2", sound: "https://s3.amazonaws.com/freecodecamp/drums/Heater-2.mp3", active: false, key: "w" },
@@ -23,7 +23,29 @@ const initalState = {
     ],
     activeSet: 1,
     volume: 0.8,
+    power: true
     }
-    
 
+const drumMachineSlice = createSlice({
+    name: 'drumMachine',
+    initialState,
+    reducers: {
+        toggleSet: (state) => {
+            state.activeSet = !state.activeSet;
+        },
+        togglePad: (state, action) => {
+         const pad = state.pads.find((p) => p.id === action.payload);
+        },
+        setVolume: (state, action) => {
+            state.volume = action.payload;
+        },
+        powerSwitch: (state) => {
+         state.power = !state.power;
+        }
+        
+    }
+})
+
+export const { toggleSet, togglePad, setVolume, powerSwitch } = drumMachineSlice.actions;
+export default drumMachineSlice.reducer;
 

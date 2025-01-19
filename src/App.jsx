@@ -14,12 +14,16 @@ function App() {
 const activePads = pads.filter((_, index) => 
    activeSet === 1 ? index < 9 : index >= 9
 );
-
+useEffect(() => {
+  const kitName = activeSet === 1 ? "Heater Kit" : "Smooth Piano Kit";
+  setDisplayText(kitName);
+}, [activeSet]);
 
 const handlePadClick = (pad) => {
   if (!power) return;
-  const audio = new Audio(pad.sound);
-  audio.volume = volume;
+  const audio =  document.getElementById(pad.key.toUpperCase());
+  audio.currentTime = 0;
+  audio.volume = volume;W
   audio.play();
   setDisplayText(pad.name);
 }
@@ -32,6 +36,22 @@ const handleToggleSet = () => {
   setDisplayText(kitName);
   dispatch(toggleSet());
 }
+
+const handleKeyPress = (event) => {
+  const pad = pads.find(p => p.key.toUpperCase() === event.key.toUpperCase());
+  if (pad) {
+    handlePadClick(pad);
+  }
+};
+
+useEffect(() => {
+  const handleKeyDown = (event) => handleKeyPress(event);
+  document.addEventListener('keydown', handleKeyDown);
+  return () => {
+    document.removeEventListener('keydown', handleKeyDown);
+  };
+}, [pads, power, volume]);
+
 
 const handlePowerSwitch = () => {
     dispatch(powerSwitch());
@@ -51,12 +71,20 @@ const handlePowerSwitch = () => {
       onClick={() => handlePadClick(pad)}
       >
       {pad.key.toUpperCase()}
+      <audio
+                 className="clip"
+                 id={pad.key.toUpperCase()}
+                 src={pad.sound}
+               />
       </div>)
      })}
     </div>
     <div className="volume-container">
-     <input className="volume-bar" type="range" min="0" max="1" step="0.1" onChange={(e) => dispatch(setVolume(Number(e.target.value)))}/>
-     <span className="volume" id="volume">{volume}</span>
+     <input value={volume * 100} className="volume-bar" type="range" min="0" max="100" step="1" onChange={(e) => { const scaledVolume = Number(e.target.value) / 100; // Scale the value back to 0-1
+               dispatch(setVolume(scaledVolume));
+               setDisplayText(`Volume: ${e.target.value}`);
+       }
+    }/>
      </div>
     </div>
     <div className="bottom-container">
